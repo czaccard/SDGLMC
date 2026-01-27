@@ -1,5 +1,7 @@
 library(Matrix)
 library(splines)
+library(tidyverse)
+library(sf)
 
 rm(list=ls())
 rr2beta = function(x) (log((100+x)/100)/10);# x: Risk (% change) associated with 10 ug/m3 increase in PM
@@ -105,18 +107,52 @@ res = fit_SDGLMC(Y, X*factor, Xmean*factor, Zmeasconf,
                  W, offset, interaction, nrep, nburn, 
                  thin, ctuning, priors)
 
+str(res)
+
+# RESULTS ###########
+# expressed as percent change in risk given 10-unit increase in X
+
+## Baseline #####
+meanB = res$ave$B_postmean*factor
+stdB = sqrt(res$ave$B2_postmean - res$ave$B_postmean^2)*factor
+sprintf('Baseline effect is: %.3f, 95%% CI: [%.3f, %.3f]', 
+        beta2rr(meanB), 
+        beta2rr(meanB - 1.96*stdB), beta2rr(meanB + 1.96*stdB))
+
+## Temporal component #####
+meanB = res$ave$Btime_postmean*factor
+stdB = sqrt(res$ave$Btime2_postmean - res$ave$Btime_postmean^2)*factor
+
+df = data.frame(m = drop(beta2rr(meanB)), 
+                lb = drop(beta2rr(meanB - 1.96*stdB)), 
+                ub = drop(beta2rr(meanB + 1.96*stdB)),
+                time=1:t)
+
+ggplot(df, aes(x=time)) +
+  geom_line(aes(y=m), col='red') +
+  geom_ribbon(aes(ymin=lb, ymax=ub), fill='red', alpha=0.4)
 
 
+## Spatial component #####
+meanB = res$ave$Bspace_postmean*factor
+stdB = sqrt(res$ave$Bspace2_postmean - res$ave$Bspace_postmean^2)*factor
 
 
+df = data.frame(m = drop(beta2rr(meanB)), 
+                lb = drop(beta2rr(meanB - 1.96*stdB)), 
+                ub = drop(beta2rr(meanB + 1.96*stdB)),
+                coords)
 
-
-
-
-
-
-
-
-
-
+ggplot(df, aes(x=lon, y=lat)) +
+  geom_point(aes(col=m), size=3) +
+  coord_sf(crs=32632) +
+  ggtitle('Posterior mean')
+ggplot(df, aes(x=lon, y=lat)) +
+  geom_point(aes(col=lb), size=3) +
+  coord_sf(crs=32632) +
+  ggtitle('Lower bound 95% CI')
+ggplot(df, aes(x=lon, y=lat)) +
+  geom_point(aes(col=ub), size=3) +
+  coord_sf(crs=32632) +
+  ggtitle('Upper bound 95% CI')
 
