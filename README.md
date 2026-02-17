@@ -1,7 +1,7 @@
 # SDGLMC
 Code and Data - "On the PM2.5 – Mortality Association: A Bayesian Model for Spatio-Temporal Confounding"
 
-This repository contains R scripts associated to the manuscript "On the PM2.5 – Mortality Association: A Bayesian Model for Spatio-Temporal Confounding" by Carlo Zaccardi, Pasquale Valentini, Luigi Ippoliti and Alexandra M. Schmidt ([arXiv](https://arxiv.org/abs/2405.16106)).
+This repository contains R scripts associated to the manuscript "On the PM2.5 – Mortality Association: A Bayesian Model for Spatio-Temporal Confounding" by Carlo Zaccardi, Pasquale Valentini, Luigi Ippoliti and Alexandra M. Schmidt ([doi](https://doi.org/10.1093/jrsssc/qlag004)).
 
 Please use the code provided to fit the _Spatial Dynamic Generalized Linear Model for Confounding (SDGLMC)_.
 
